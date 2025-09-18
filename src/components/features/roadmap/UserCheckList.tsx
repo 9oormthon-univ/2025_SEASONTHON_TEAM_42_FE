@@ -621,7 +621,7 @@ export default function UserCheckList({
         </RoadmapBackground>
 
         {/* 오른쪽 - 두 개의 카드 (세로 배치) */}
-        <div className="flex flex-col gap-4 w-full xl:w-auto">
+        <div className="flex flex-col gap-4 w-full">
           {/* 상단 카드 - 취업 정보 */}
           <div
             className="bg-white rounded-3xl py-6 px-8 h-60 w-full bg-white"
