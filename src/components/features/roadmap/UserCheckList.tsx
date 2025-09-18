@@ -11,6 +11,7 @@ import {
 } from '@/types/roadmap';
 import { PiStarThin } from 'react-icons/pi';
 import { HiStar } from 'react-icons/hi';
+import { IoMdMore } from 'react-icons/io';
 import {
   toggleRoadMapAction,
   updateRoadmapAction,
@@ -62,6 +63,14 @@ export default function UserCheckList({
   const [showFullCompletionAnimation, setShowFullCompletionAnimation] =
     useState<boolean>(false);
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
+  const [openDropdownItem, setOpenDropdownItem] = useState<{
+    stepId: number;
+    itemId: number;
+  } | null>(null);
+  const [deletingItem, setDeletingItem] = useState<{
+    stepId: number;
+    itemId: number;
+  } | null>(null);
 
   // API 데이터를 UI용 데이터로 변환
   useEffect(() => {
@@ -138,6 +147,23 @@ export default function UserCheckList({
       return () => clearTimeout(timer);
     }
   }, [showCompletionAnimation]);
+
+  // 다른 곳 클릭 시 드롭다운 닫기
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (openDropdownItem) {
+        closeDropdown();
+      }
+    };
+
+    if (openDropdownItem) {
+      document.addEventListener('click', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [openDropdownItem]);
 
   // 로드맵 단계 데이터 변환
   const roadmapSteps = convertApiDataToRoadmapSteps(
@@ -310,6 +336,7 @@ export default function UserCheckList({
   const cancelEditing = () => {
     setEditingItem(null);
     setEditText('');
+    closeDropdown();
   };
 
   const saveEditing = async () => {
@@ -321,13 +348,12 @@ export default function UserCheckList({
       );
       setEditingItem(null);
       setEditText('');
+      closeDropdown();
     }
   };
 
   const handleDelete = async (stepId: number, itemId: number) => {
-    if (window.confirm('이 항목을 삭제하시겠습니까?')) {
-      await deleteChecklistItem(stepId, itemId);
-    }
+    await deleteChecklistItem(stepId, itemId);
   };
 
   const startAddingNewItem = () => {
@@ -405,6 +431,34 @@ export default function UserCheckList({
   const saveNewItem = async () => {
     if (newItemText.trim() && selectedStepId) {
       await addNewChecklistItem(selectedStepId, newItemText.trim());
+    }
+  };
+
+  const toggleDropdown = (stepId: number, itemId: number) => {
+    setOpenDropdownItem(
+      openDropdownItem?.stepId === stepId && openDropdownItem?.itemId === itemId
+        ? null
+        : { stepId, itemId }
+    );
+  };
+
+  const closeDropdown = () => {
+    setOpenDropdownItem(null);
+  };
+
+  const startDeleting = (stepId: number, itemId: number) => {
+    setDeletingItem({ stepId, itemId });
+    closeDropdown();
+  };
+
+  const cancelDeleting = () => {
+    setDeletingItem(null);
+  };
+
+  const confirmDelete = async () => {
+    if (deletingItem) {
+      await deleteChecklistItem(deletingItem.stepId, deletingItem.itemId);
+      setDeletingItem(null);
     }
   };
 
@@ -704,6 +758,9 @@ export default function UserCheckList({
                       const isEditing =
                         editingItem?.stepId === selectedStepId &&
                         editingItem?.itemId === item.id;
+                      const isDeleting =
+                        deletingItem?.stepId === selectedStepId &&
+                        deletingItem?.itemId === item.id;
 
                       return (
                         <div key={item.id} className="flex items-center gap-4">
@@ -748,14 +805,34 @@ export default function UserCheckList({
                                 <button
                                   onClick={saveEditing}
                                   disabled={loading}
-                                  className="px-3 py-1 bg-primary-90 text-white rounded text-body-medium hover:bg-primary-80 disabled:opacity-50 disabled:cursor-not-allowed"
+                                  className="px-2 py-1 text-xs bg-green-100 text-green-700 rounded-full hover:bg-green-200 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                  저장
+                                  확인
                                 </button>
                                 <button
                                   onClick={cancelEditing}
                                   disabled={loading}
-                                  className="px-3 py-1 bg-gray-300 text-gray-700 rounded text-body-medium hover:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                                  className="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                  취소
+                                </button>
+                              </div>
+                            ) : isDeleting ? (
+                              <div className="flex items-center gap-2">
+                                <span className="text-body-large text-gray-800 flex-1">
+                                  정말 삭제하시겠습니까?
+                                </span>
+                                <button
+                                  onClick={confirmDelete}
+                                  disabled={loading}
+                                  className="px-2 py-1 text-xs bg-red-100 text-red-700 rounded-full hover:bg-red-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                  삭제
+                                </button>
+                                <button
+                                  onClick={cancelDeleting}
+                                  disabled={loading}
+                                  className="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                   취소
                                 </button>
@@ -774,30 +851,44 @@ export default function UserCheckList({
                                 >
                                   {item.text}
                                 </span>
-                                <div className="flex gap-1">
+                                {openDropdownItem?.stepId === selectedStepId &&
+                                openDropdownItem?.itemId === item.id ? (
+                                  <div className="flex gap-1">
+                                    <button
+                                      onClick={() => {
+                                        startEditing(
+                                          selectedStepId,
+                                          item.id,
+                                          item.text
+                                        );
+                                        closeDropdown();
+                                      }}
+                                      disabled={loading}
+                                      className="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                      수정
+                                    </button>
+                                    <button
+                                      onClick={() => {
+                                        startDeleting(selectedStepId, item.id);
+                                      }}
+                                      disabled={loading}
+                                      className="px-2 py-1 text-xs bg-red-100 text-red-700 rounded-full hover:bg-red-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                      삭제
+                                    </button>
+                                  </div>
+                                ) : (
                                   <button
                                     onClick={() =>
-                                      startEditing(
-                                        selectedStepId,
-                                        item.id,
-                                        item.text
-                                      )
+                                      toggleDropdown(selectedStepId, item.id)
                                     }
                                     disabled={loading}
-                                    className="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="p-1 hover:bg-gray-100 rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
                                   >
-                                    수정
+                                    <IoMdMore className="w-5 h-5 text-gray-500" />
                                   </button>
-                                  <button
-                                    onClick={() =>
-                                      handleDelete(selectedStepId, item.id)
-                                    }
-                                    disabled={loading}
-                                    className="px-2 py-1 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                                  >
-                                    삭제
-                                  </button>
-                                </div>
+                                )}
                               </div>
                             )}
                           </div>
