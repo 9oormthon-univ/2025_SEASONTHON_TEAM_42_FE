@@ -220,8 +220,51 @@ function HeartListsContent() {
 
   // 교육 북마크 토글 핸들러
   const handleToggleBookmark = async (educationId: string) => {
-    // 북마크 해제 로직 (필요시 구현)
-    console.log('북마크 토글:', educationId);
+    try {
+      // 현재 해당 교육의 북마크 상태 찾기
+      const currentEducation = educationHistory.find(
+        (edu) => edu.trprId === educationId
+      );
+      if (!currentEducation) return;
+
+      const isCurrentlyBookmarked = currentEducation.isBookmark;
+      const endpoint = isCurrentlyBookmarked
+        ? `/api/heart-lists/edu/delete?jobId=${educationId}`
+        : '/api/heart-lists/edu/save';
+
+      const requestOptions: RequestInit = {
+        method: isCurrentlyBookmarked ? 'DELETE' : 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      };
+
+      // POST 요청인 경우에만 body 추가
+      if (!isCurrentlyBookmarked) {
+        requestOptions.body = JSON.stringify({ jobId: parseInt(educationId) });
+      }
+
+      const response = await fetch(endpoint, requestOptions);
+      const data = await response.json();
+
+      if (data.result === 'SUCCESS') {
+        // 상태 업데이트: 북마크 상태 토글
+        setEducationHistory((prevHistory) =>
+          prevHistory.map((edu) =>
+            edu.trprId === educationId
+              ? { ...edu, isBookmark: !isCurrentlyBookmarked }
+              : edu
+          )
+        );
+        console.log(
+          isCurrentlyBookmarked ? '북마크 해제 성공' : '북마크 추가 성공'
+        );
+      } else {
+        console.error('북마크 토글 실패:', data.error);
+      }
+    } catch (error) {
+      console.error('북마크 토글 에러:', error);
+    }
   };
 
   return (
