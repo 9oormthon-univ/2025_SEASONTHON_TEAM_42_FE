@@ -61,6 +61,7 @@ export default function UserCheckList({
     useState<boolean>(false);
   const [showFullCompletionAnimation, setShowFullCompletionAnimation] =
     useState<boolean>(false);
+  const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
 
   // API 데이터를 UI용 데이터로 변환
   useEffect(() => {
@@ -92,14 +93,40 @@ export default function UserCheckList({
       const currentChecklist = checklistItems[selectedStepId];
       const allCompleted = currentChecklist.every((item) => item.completed);
 
-      if (allCompleted && !showFullCompletionAnimation) {
+      // 이미 완료된 단계가 아니고, 모든 항목이 완료되었을 때만 애니메이션 표시
+      if (
+        allCompleted &&
+        !completedSteps.has(selectedStepId) &&
+        !showFullCompletionAnimation
+      ) {
         setShowFullCompletionAnimation(true);
+        setCompletedSteps((prev) => new Set(prev).add(selectedStepId));
+
+        // 애니메이션을 한 번만 보여주기 위해 3초 후 자동으로 false로 설정하고 다음 단계로 이동
+        const timer = setTimeout(() => {
+          setShowFullCompletionAnimation(false);
+          // 다음 단계로 자동 이동
+          const nextStepId = selectedStepId + 1;
+          const maxStepId = Math.max(
+            ...Object.keys(checklistItems).map(Number)
+          );
+          if (nextStepId <= maxStepId) {
+            setSelectedStepId(nextStepId);
+          }
+        }, 3000);
+
+        return () => clearTimeout(timer);
       }
     } else {
       // 단계가 변경되면 전체 완료 애니메이션 상태 리셋
       setShowFullCompletionAnimation(false);
     }
-  }, [checklistItems, selectedStepId, showFullCompletionAnimation]);
+  }, [
+    checklistItems,
+    selectedStepId,
+    showFullCompletionAnimation,
+    completedSteps,
+  ]);
 
   // 개별 완료 애니메이션 자동 종료
   useEffect(() => {
@@ -552,12 +579,7 @@ export default function UserCheckList({
               {/* 왼쪽 섹션 */}
               <div className="flex-[2] flex flex-col justify-between">
                 <div>
-                  <div className="text-primary-90 text-header-medium">
-                    {roadmapData
-                      ? `D+${roadmapData.roadmapInputResponse.dday}`
-                      : defaultCareerInfo.dDay}
-                  </div>
-                  <div className="text-gray-800 text-title-xlarge mt-2">
+                  <div className="text-gray-800 text-title-xlarge">
                     {roadmapData
                       ? roadmapData.roadmapInputResponse.career
                       : defaultCareerInfo.jobTitle}
@@ -630,7 +652,7 @@ export default function UserCheckList({
                 <div className="flex flex-row items-end gap-2">
                   <div className="text-primary-90 text-header-medium">
                     {apiRoadmapSteps.length > 0
-                      ? `${apiRoadmapSteps[selectedStepId - 1]?.period || ''} ${apiRoadmapSteps[selectedStepId - 1]?.category || '단계'}`
+                      ? `${apiRoadmapSteps[selectedStepId - 1]?.category || '단계'}`
                       : mockRoadmapData.steps.find(
                           (step) => step.id === selectedStepId
                         )?.name || '단계'}
