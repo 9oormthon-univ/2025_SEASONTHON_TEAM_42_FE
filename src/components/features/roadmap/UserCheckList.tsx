@@ -499,9 +499,9 @@ export default function UserCheckList({
         width="100vw"
         height="100vh"
       />
-      <div className="flex gap-4">
+      <div className="flex flex-col xl:flex-row gap-4">
         {/* 왼쪽 - 로드맵 시각화 */}
-        <RoadmapBackground className="h-[800px] w-[498px] flex-shrink-0">
+        <RoadmapBackground className="h-[400px] sm:h-[600px] xl:h-[800px] w-full xl:w-[498px] flex-shrink-0">
           <RoadmapHeader userName={userName} />
 
           {/* 로드맵 차트 */}
@@ -621,7 +621,7 @@ export default function UserCheckList({
         </RoadmapBackground>
 
         {/* 오른쪽 - 두 개의 카드 (세로 배치) */}
-        <div className="flex flex-col gap-4 w-full">
+        <div className="flex flex-col gap-4 w-full xl:w-auto">
           {/* 상단 카드 - 취업 정보 */}
           <div
             className="bg-white rounded-3xl py-6 px-8 h-60 w-full bg-white"
@@ -802,40 +802,44 @@ export default function UserCheckList({
                                   }}
                                   autoFocus
                                 />
-                                <button
-                                  onClick={saveEditing}
-                                  disabled={loading}
-                                  className="px-2 py-1 text-xs bg-green-100 text-green-700 rounded-full hover:bg-green-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                  확인
-                                </button>
-                                <button
-                                  onClick={cancelEditing}
-                                  disabled={loading}
-                                  className="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                  취소
-                                </button>
+                                <div className="flex gap-2">
+                                  <button
+                                    onClick={saveEditing}
+                                    disabled={loading}
+                                    className="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-full hover:bg-green-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                  >
+                                    확인
+                                  </button>
+                                  <button
+                                    onClick={cancelEditing}
+                                    disabled={loading}
+                                    className="px-3 py-1 text-xs bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                  >
+                                    취소
+                                  </button>
+                                </div>
                               </div>
                             ) : isDeleting ? (
                               <div className="flex items-center gap-2">
                                 <span className="text-body-large text-gray-800 flex-1">
                                   정말 삭제하시겠습니까?
                                 </span>
-                                <button
-                                  onClick={confirmDelete}
-                                  disabled={loading}
-                                  className="px-2 py-1 text-xs bg-red-100 text-red-700 rounded-full hover:bg-red-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                  삭제
-                                </button>
-                                <button
-                                  onClick={cancelDeleting}
-                                  disabled={loading}
-                                  className="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                  취소
-                                </button>
+                                <div className="flex gap-2">
+                                  <button
+                                    onClick={confirmDelete}
+                                    disabled={loading}
+                                    className="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-full hover:bg-red-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                  >
+                                    삭제
+                                  </button>
+                                  <button
+                                    onClick={cancelDeleting}
+                                    disabled={loading}
+                                    className="px-3 py-1 text-xs bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                  >
+                                    취소
+                                  </button>
+                                </div>
                               </div>
                             ) : (
                               <div className="flex items-center gap-2">
