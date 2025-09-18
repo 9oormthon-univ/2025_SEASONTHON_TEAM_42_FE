@@ -8,8 +8,8 @@ interface CompletionAnimationProps {
   onComplete?: () => void;
   duration?: number;
   lottieUrl?: string;
-  width?: string | number;
-  height?: string | number;
+  width?: string;
+  height?: string;
 }
 
 const CompletionAnimation: React.FC<CompletionAnimationProps> = ({
