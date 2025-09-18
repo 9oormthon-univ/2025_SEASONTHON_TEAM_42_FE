@@ -62,10 +62,10 @@ export default function CareerRoadmapSection() {
   console.log('CareerRoadmapSection - roadmapSteps:', roadmapSteps);
 
   return (
-    <section className="w-full px-4 py-8">
+    <section className="w-full px-2 sm:px-4 py-4 sm:py-8">
       <div className="max-w-[1200px] mx-auto">
         <RoadmapBackground
-          className="h-[420px] w-[1200px] flex-shrink-0"
+          className="h-[300px] sm:h-[420px] w-full max-w-[1200px] flex-shrink-0"
           overlayBlur={!userName}
         >
           <RoadmapHeader userName={userName} showDetailLink={!!userName} />
@@ -74,7 +74,7 @@ export default function CareerRoadmapSection() {
           <div className="flex-1 relative flex items-center justify-center">
             {!userName ? (
               <div className="text-center bg-white/40 rounded-2xl px-3 py-2 flex items-center gap-3">
-                <p className="text-black text-title-xlarge opacity-90">
+                <p className="text-black text-lg sm:text-title-xlarge opacity-90">
                   로그인 하시고
                   <br />
                   취업 로드맵 받아보세요!
@@ -82,13 +82,13 @@ export default function CareerRoadmapSection() {
               </div>
             ) : loading ? (
               <div className="text-center bg-white/40 rounded-2xl px-3 py-2 flex items-center gap-3">
-                <p className="text-black text-title-xlarge opacity-90">
+                <p className="text-black text-lg sm:text-title-xlarge opacity-90">
                   로드맵을 불러오는 중...
                 </p>
               </div>
             ) : error ? (
               <div className="text-center bg-white/40 rounded-2xl px-3 py-2 flex items-center gap-3">
-                <p className="text-black text-title-xlarge opacity-90">
+                <p className="text-black text-lg sm:text-title-xlarge opacity-90">
                   {error}
                 </p>
               </div>
@@ -103,7 +103,7 @@ export default function CareerRoadmapSection() {
                       <StarIcon filled={step.completed} size="lg" />
                     </div>
                     <span
-                      className="text-white text-title-xlarge whitespace-nowrap"
+                      className="text-white text-sm sm:text-title-xlarge whitespace-nowrap"
                       style={{
                         position: 'absolute',
                         top: step.position.y > 50 ? '40px' : '40px',
