@@ -924,14 +924,14 @@ export default function UserCheckList({
                             <button
                               onClick={saveNewItem}
                               disabled={loading || !newItemText.trim()}
-                              className="px-3 py-1 bg-primary-90 text-white rounded text-body-medium hover:bg-primary-80 disabled:opacity-50 disabled:cursor-not-allowed"
+                              className="px-2 py-1 text-xs bg-green-100 text-green-700 rounded-full hover:bg-green-200 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                              추가
+                              확인
                             </button>
                             <button
                               onClick={cancelAddingNewItem}
                               disabled={loading}
-                              className="px-3 py-1 bg-gray-300 text-gray-700 rounded text-body-medium hover:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                              className="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                               취소
                             </button>
@@ -959,7 +959,7 @@ export default function UserCheckList({
                   </div>
                 </div>
 
-                <div className="absolute bottom-4 right-4">
+                <div className="absolute top-4 right-4">
                   <img
                     src="/assets/Icons/character_cheer.png"
                     alt="응원하는 별 캐릭터"
