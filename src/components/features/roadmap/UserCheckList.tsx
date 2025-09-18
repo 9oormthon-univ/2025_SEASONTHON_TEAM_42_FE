@@ -716,9 +716,15 @@ export default function UserCheckList({
                               className="hover:scale-110 transition-transform cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                               {item.completed ? (
-                                <HiStar className="w-8 h-8 text-secondary2" />
+                                <HiStar
+                                  className="w-8 h-8"
+                                  style={{ color: 'var(--color-secondary2)' }}
+                                />
                               ) : (
-                                <PiStarThin className="w-8 h-8 text-gray-300" />
+                                <PiStarThin
+                                  className="w-8 h-8"
+                                  style={{ color: 'var(--color-secondary2)' }}
+                                />
                               )}
                             </button>
                           </div>
