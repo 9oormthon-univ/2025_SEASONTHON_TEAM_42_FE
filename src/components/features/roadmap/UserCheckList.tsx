@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import { mockRoadmapData, defaultCareerInfo } from '@/data/roadmapData';
 import {
   ChecklistItem,
@@ -18,9 +19,9 @@ import {
 } from '@/lib/api/jobApi';
 import RoadmapPosition from '@/components/ui/RoadmapPosition';
 import RoadmapBackground from '@/components/ui/RoadmapBackground';
+import CompletionAnimation from '@/components/ui/CompletionAnimation';
 import RoadmapHeader from '@/components/ui/RoadmapHeader';
 import RoadmapRenderer from '@/components/ui/RoadmapRenderer';
-import CompletionAnimation from '@/components/ui/CompletionAnimation';
 import {
   convertApiDataToRoadmapSteps,
   USER_MAP_POSITIONS,
@@ -58,6 +59,8 @@ export default function UserCheckList({
   const [newItemText, setNewItemText] = useState<string>('');
   const [showCompletionAnimation, setShowCompletionAnimation] =
     useState<boolean>(false);
+  const [showFullCompletionAnimation, setShowFullCompletionAnimation] =
+    useState<boolean>(false);
 
   // API 데이터를 UI용 데이터로 변환
   useEffect(() => {
@@ -82,6 +85,32 @@ export default function UserCheckList({
       setChecklistItems(mockRoadmapData.checklists);
     }
   }, [roadmapData]);
+
+  // 전체 완료 상태 감지
+  useEffect(() => {
+    if (selectedStepId && checklistItems[selectedStepId]) {
+      const currentChecklist = checklistItems[selectedStepId];
+      const allCompleted = currentChecklist.every((item) => item.completed);
+
+      if (allCompleted && !showFullCompletionAnimation) {
+        setShowFullCompletionAnimation(true);
+      }
+    } else {
+      // 단계가 변경되면 전체 완료 애니메이션 상태 리셋
+      setShowFullCompletionAnimation(false);
+    }
+  }, [checklistItems, selectedStepId, showFullCompletionAnimation]);
+
+  // 개별 완료 애니메이션 자동 종료
+  useEffect(() => {
+    if (showCompletionAnimation) {
+      const timer = setTimeout(() => {
+        setShowCompletionAnimation(false);
+      }, 2000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showCompletionAnimation]);
 
   // 로드맵 단계 데이터 변환
   const roadmapSteps = convertApiDataToRoadmapSteps(
@@ -380,10 +409,14 @@ export default function UserCheckList({
   // 로드맵이 있는 경우 - 왼쪽에 로드맵, 오른쪽에 두 개의 카드
   return (
     <>
+      {/* 전체 완료 애니메이션 (큰 크기) */}
       <CompletionAnimation
-        isVisible={showCompletionAnimation}
-        onComplete={() => setShowCompletionAnimation(false)}
-        duration={2000}
+        isVisible={showFullCompletionAnimation}
+        onComplete={() => setShowFullCompletionAnimation(false)}
+        duration={3000}
+        lottieUrl="https://lottie.host/f2b25a20-fa49-4d95-b67c-1018e89ad205/6YAM5nWWhK.lottie"
+        width="100vw"
+        height="100vh"
       />
       <div className="flex gap-4">
         {/* 왼쪽 - 로드맵 시각화 */}
@@ -575,6 +608,22 @@ export default function UserCheckList({
               boxShadow: '0 4px 10px 0 rgba(17, 17, 17, 0.20)',
             }}
           >
+            {/* 개별 항목 완료 애니메이션 (카드 내부) */}
+            {showCompletionAnimation && (
+              <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+                <div className="relative">
+                  <DotLottieReact
+                    src="https://lottie.host/e0634298-f1dc-4561-82eb-90cf7f64d5af/Cmarc8qPeg.lottie"
+                    loop={false}
+                    autoplay={true}
+                    style={{
+                      width: '120px',
+                      height: '120px',
+                    }}
+                  />
+                </div>
+              </div>
+            )}
             {selectedStepId ? (
               // 체크리스트 표시
               <div className="h-full flex flex-col">
@@ -616,16 +665,18 @@ export default function UserCheckList({
                       </button>
                     </div>
                   )}
-
                   {/* 로딩 상태 */}
-                  {loading && (
-                    <div className="mb-4 p-3 bg-blue-100 border border-blue-300 rounded-lg">
-                      <p className="text-blue-700 text-body-medium">
-                        처리 중...
-                      </p>
+                  {/* {loading && (
+                    <div className="mb-4 flex items-center justify-center">
+                      <CompletionAnimation
+                        isVisible={loading}
+                        lottieUrl="https://lottie.host/0f0671f1-cd41-46c7-8bec-b4ee6d9eac7d/55urjx7CQ5.lottie"
+                        width="80px"
+                        height="80px"
+                        duration={0}
+                      />
                     </div>
-                  )}
-
+                  )} */}
                   <div className="space-y-4">
                     {checklistItems[selectedStepId]?.map((item, index) => {
                       const isEditing =
