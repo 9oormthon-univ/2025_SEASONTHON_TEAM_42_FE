@@ -22,6 +22,16 @@ interface EducationProgramsClientProps {
   isLoggedInInitial: boolean;
 }
 
+/**
+ * Client-side React component that renders a searchable, filterable, and paginated list of education programs with bookmarking support.
+ *
+ * Manages loading state, search debouncing, filters, tab selection (custom vs. all), bookmark toggling, and pagination; fetches data based on login state and active tab.
+ *
+ * @param initialEducations - Initial list of education summaries used to populate the UI before any fetches
+ * @param initialTotalElements - Initial total number of education items used to compute pagination when available
+ * @param isLoggedInInitial - Initial login state; determines the default active tab and which data sources to use
+ * @returns The rendered React element for the education programs client UI
+ */
 export default function EducationProgramsClient({
   initialEducations,
   initialTotalElements,

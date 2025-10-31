@@ -20,6 +20,20 @@ interface JobPostingsClientProps {
   isLoggedInInitial: boolean;
 }
 
+/**
+ * Renders the job postings client UI with searchable, filterable, tabbed, and paginated job listings.
+ *
+ * This component initializes with server-provided jobs and manages client-side state for favorites (scraps),
+ * active tab ("custom" or "all"), login status, search (with 500ms debounce), filters, pagination, and loading.
+ * It conditionally fetches job data (recommended or all jobs) based on tab and login state, converts API job
+ * shapes to a unified format for JobCard, and provides UI controls for filtering, tab switching, scrapping,
+ * and page navigation.
+ *
+ * @param initialJobs - Initial list of jobs provided to the client (may be from different API shapes)
+ * @param initialTotalElements - Initial total number of job results used to compute pagination
+ * @param isLoggedInInitial - Initial login state to determine default active tab and available actions
+ * @returns The job postings page JSX including search bar, filters, optional tabs, job cards (two-column layout), pagination, and footer
+ */
 export default function JobPostingsClient({
   initialJobs,
   initialTotalElements,

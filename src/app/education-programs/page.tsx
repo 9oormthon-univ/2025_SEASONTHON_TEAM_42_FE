@@ -2,6 +2,15 @@ import { cookies } from 'next/headers';
 import EducationProgramsClient from './EducationProgramsClient';
 import { EducationSummary } from '@/types/job';
 
+/**
+ * Fetches initial education listings and a total count according to whether the user is logged in.
+ *
+ * When `isLoggedIn` is true, retrieves personalized recommendations using the access token from cookies.
+ * When `isLoggedIn` is false, retrieves anonymous public listings (page 1, size 10) via the internal anonymous API.
+ *
+ * @param isLoggedIn - Determines whether to fetch personalized recommendations (true) or anonymous listings (false)
+ * @returns An object containing `educations` — an array of mapped EducationSummary items — and `totalElements` — the total number of educations (may equal `educations.length`)
+ */
 async function fetchInitialEducations(
   isLoggedIn: boolean
 ): Promise<{ educations: EducationSummary[]; totalElements: number }> {
@@ -139,6 +148,11 @@ async function fetchInitialEducations(
   }
 }
 
+/**
+ * Server component that renders the education programs client preloaded with initial data based on the user's login state.
+ *
+ * @returns A React element that renders EducationProgramsClient with `initialEducations`, `initialTotalElements`, and `isLoggedInInitial` props populated from server-side cookie- and backend-derived data.
+ */
 export default async function EducationPrograms() {
   const cookieStore = await cookies();
   const isLoggedIn = Boolean(cookieStore.get('accessToken')?.value);

@@ -182,6 +182,16 @@ interface JobCardClientProps {
   onToggleScrap: (jobId: string) => void;
 }
 
+/**
+ * Render a job card with compact and expandable detail views.
+ *
+ * Shows company, title, tags, salary, D-day, and a recommendation score; supports expanding to reveal detailed fields and an application button.
+ * The component manages local bookmark (scrap) state and performs network requests to save/delete bookmarks and to fetch job details when applying.
+ *
+ * @param job - Job data to display (summary fields used for compact and expanded views)
+ * @param onToggleScrap - Called with the job's id after a scrap/bookmark toggle to inform the parent of the change
+ * @returns The job card React element
+ */
 export default function JobCardClient({
   job,
   onToggleScrap,

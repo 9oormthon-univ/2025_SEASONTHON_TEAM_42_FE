@@ -2,6 +2,12 @@ import { cookies } from 'next/headers';
 import JobPostingsClient from './JobPostingsClient';
 import { AllResponse, JobResponse } from '@/types/job';
 
+/**
+ * Fetches the first page of job postings from the backend, selecting the authenticated or anonymous endpoint based on the caller's login state.
+ *
+ * @param isLoggedIn - Whether the current request is from an authenticated user
+ * @returns An object with `jobs` (the fetched job DTOs, or an empty array on error) and `totalElements` (the total number of jobs, or `0` on error)
+ */
 async function fetchInitialJobs(
   isLoggedIn: boolean
 ): Promise<{ jobs: (AllResponse | JobResponse)[]; totalElements: number }> {
@@ -59,6 +65,11 @@ async function fetchInitialJobs(
   }
 }
 
+/**
+ * Prepares initial job postings data based on authentication state and renders the JobPostingsClient component.
+ *
+ * @returns The JobPostingsClient React element configured with `initialJobs`, `initialTotalElements`, and `isLoggedInInitial`.
+ */
 export default async function JobPostings() {
   const cookieStore = await cookies();
   const isLoggedIn = Boolean(cookieStore.get('accessToken')?.value);

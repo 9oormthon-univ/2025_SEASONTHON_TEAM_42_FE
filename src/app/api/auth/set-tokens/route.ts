@@ -1,5 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+/**
+ * Stores access and refresh tokens as HTTP cookies and returns a success response.
+ *
+ * Expects the request body JSON to contain `accessToken` and `refreshToken`. On success returns a JSON response `{ success: true }` and sets an `accessToken` cookie (maxAge 7 days) and a `refreshToken` cookie (maxAge 30 days) with `sameSite: 'strict'` and `secure` enabled only when `NODE_ENV` is `'production'`. If either token is missing responds with a 400 JSON error `{ error: '토큰이 필요합니다.' }`. On unexpected errors responds with a 500 JSON error `{ error: '토큰 저장에 실패했습니다.' }`.
+ *
+ * @param request - NextRequest whose JSON body must include `accessToken` and `refreshToken`
+ * @returns A NextResponse containing either the success JSON with cookies set, or a JSON error with the corresponding HTTP status
+ */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
